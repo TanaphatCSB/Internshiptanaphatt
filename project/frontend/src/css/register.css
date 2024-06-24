@@ -1,0 +1,105 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+
+.Registerhead{
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    color: #ff9e9e;
+}
+
+.Registerform {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    background: #830f0f;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+.Registerform:hover {
+    transform: scale(1.02);
+}
+
+.registerbox {
+    width: 100%;
+}
+
+h2 {
+    color: #ff9e9e;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.form-groupregister {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-groupregister label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ff9e9e;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dfe6e9;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s,transform 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #0984e3;
+    box-shadow: 0 0 8px rgba(9, 132, 227, 0.3);
+    outline: none;
+    transform: scale(1.02);
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 10PX;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    color: #5f0404;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #f3a683;
+    transform: translateY(-2px);
+}
+
+span {
+    color: #d63031;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.error {
+    color: #d63031;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}

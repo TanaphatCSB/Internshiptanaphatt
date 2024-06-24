@@ -1,0 +1,74 @@
+
+.Loginhead {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to right, #2a7286, #93b9df);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.Login {
+    background-color: #ebc18a;
+    padding: 80px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+.Loginbox {
+    text-align: center;
+}
+
+.Loginbox h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #1e3c72;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #1e3c72;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #a8dadc;
+    box-shadow: 0 0 5px rgba(168, 218, 220, 0.5);
+    outline: none;
+}
+
+span {
+    color: red;
+    font-size: 14px;
+}
+
+.btn-success {
+    background-color: #f4a261;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #e76f51;
+}
