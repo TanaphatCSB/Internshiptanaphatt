@@ -44,7 +44,7 @@ export default function MyUsers() {
     <div>
       <User />
       <div className="condiv user-stickers">
-        <h3>สติ๊กเกอร์ของคุณ:</h3>
+        <h3>สติ๊กเกอร์ของคุณ: {user.userid}</h3>
         {uniqueUserStickers.length > 0 ? (
           <ul className="listassign">
             {uniqueUserStickers.map(sticker => (
@@ -60,3 +60,7 @@ export default function MyUsers() {
     </div>
   );
 }
+
+
+
+

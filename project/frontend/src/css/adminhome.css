@@ -72,7 +72,6 @@ body {
 
 .center-table {
     margin-left: 280px;
-    padding: 100px 30px 30px;
 }
 
 .table-container {
@@ -407,3 +406,8 @@ h2 {
   }
   
   
+  /* .center-table {
+    max-width: 100%;
+    padding: 10px;
+    margin: auto;
+} */

@@ -1,92 +1,105 @@
-// import React, { useState, useEffect } from 'react';
+
+// import React, { useEffect, useState } from 'react';
+// import { useParams } from 'react-router-dom';
 // import axios from 'axios';
+// import User from './userhome';
 
-// const UserDevices = ({ id }) => {
-//     const [devices, setDevices] = useState([]);
-//     const [newDevice, setNewDevice] = useState({ name: '', type: '' });
+// export default function UserDevices() {
+//   const { sticker } = useParams();
+//   const [devices, setDevices] = useState([]);
 
-//     useEffect(() => {
-//         fetchUserDevices();
-//     }, [id]);
+//   useEffect(() => {
+//     // const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8081';
+   
+    
+//     // console.log('Fetching devices for sticker:', sticker);
+//     // axios.get(`${apiUrl}/getUserDevicesBySticker/${sticker}`)
+    
+   
+//     axios.get(`http://localhost:8081/getUserDevicesBySticker/${sticker}`)
+//       .then(response => {
+//         setDevices(response.data);
+//       })
+//       .catch(error => {
+//         console.error('Error fetching devices:', error);
+//       });
+//   }, [sticker]);
 
-//     const fetchUserDevices = async () => {
-//         try {
-//             const response = await axios.get(`/api/devices/${id}`);
-//             setDevices(response.data);
-//         } catch (error) {
-//             console.error('Error fetching user devices:', error);
-//         }
-//     };
-
-//     const handleInputChange = (e) => {
-//         setNewDevice({ ...newDevice, [e.target.name]: e.target.value });
-//     };
-
-//     const handleAddDevice = async () => {
-//         try {
-//             await axios.post('/api/devices', { id, ...newDevice });
-//             setNewDevice({ name: '', type: '' });
-//             fetchUserDevices();
-//         } catch (error) {
-//             console.error('Error adding device:', error);
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <h2>Your Devices</h2>
-//             <ul>
-//                 {devices.map((device) => (
-//                     <li key={device.id}>{device.device_name} ({device.device_type})</li>
-//                 ))}
-//             </ul>
-//             <h3>Add New Device</h3>
-//             <input
-//                 type="text"
-//                 name="name"
-//                 value={newDevice.name}
-//                 onChange={handleInputChange}
-//                 placeholder="Device Name"
-//             />
-//             <input
-//                 type="text"
-//                 name="type"
-//                 value={newDevice.type}
-//                 onChange={handleInputChange}
-//                 placeholder="Device Type"
-//             />
-//             <button onClick={handleAddDevice}>Add Device</button>
-//         </div>
-//     );
-// };
-
-// export default UserDevices;
+//   return (
+//     <div>
+//       <User />
+//       <div className="condiv user-devices">
+//         <h3>อุปกรณ์ในสติ๊กเกอร์ {sticker}:</h3>
+//         {devices.length > 0 ? (
+//           <ul className="listassign">
+//             {devices.map(device => (
+//               <li key={device.user_device_id}>
+//                 <a href={`/userassign/${sticker}/${device.device_id}`}>{device.device_name}</a>
+//               </li>
+//             ))}
+//           </ul>
+//         ) : (
+//           <p>ไม่มีอุปกรณ์ในสติ๊กเกอร์นี้ </p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import User from './userhome';
+import { UserContext } from './userContext';
 
 export default function UserDevices() {
   const { sticker } = useParams();
   const [devices, setDevices] = useState([]);
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/getUserDevicesBySticker/${sticker}`)
-      .then(response => {
-        setDevices(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching devices:', error);
-      });
-  }, [sticker]);
+    const checkUser = async () => {
+      if (!user) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          fetchDevices(parsedUser.userid);
+        } else {
+          navigate('/login');
+        }
+      } else {
+        fetchDevices(user.userid);
+      }
+    };
+
+    checkUser();
+  }, [user, setUser, sticker, navigate]);
+
+  const fetchDevices = (userId) => {
+    if (userId && sticker) {
+      axios.get(`http://localhost:8081/getUserDevicesBySticker/${userId}/${sticker}`)
+        .then(response => {
+          setDevices(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching devices:', error);
+        });
+    }
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <User />
       <div className="condiv user-devices">
-        <h3>อุปกรณ์ในสติ๊กเกอร์ {sticker}:</h3>
+        <h3>อุปกรณ์ในสติ๊กเกอร์ {sticker} สำหรับผู้ใช้ {user.userid}</h3>
         {devices.length > 0 ? (
           <ul className="listassign">
             {devices.map(device => (
@@ -96,9 +109,73 @@ export default function UserDevices() {
             ))}
           </ul>
         ) : (
-          <p>ไม่มีอุปกรณ์ในสติ๊กเกอร์นี้</p>
+          <p>ไม่มีอุปกรณ์ในสติ๊กเกอร์นี้ </p>
         )}
       </div>
     </div>
   );
 }
+
+// import React, { useContext, useEffect, useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import "../css/home.css";
+// import axios from 'axios';
+// import User from './userhome';
+// import { UserContext } from './userContext';
+
+// export default function MyUsers() {
+//   const navigate = useNavigate();
+//   const { user, setUser } = useContext(UserContext);
+//   const [userStickers, setUserStickers] = useState([]);
+//   const apiUrl = process.env.REACT_APP_API_URL;
+
+//   useEffect(() => {
+//     if (user) {
+//       axios.get(`${apiUrl}/getUserStickers/${user.userid}`)
+//         .then(response => {
+//           setUserStickers(response.data);
+//         })
+//         .catch(error => {
+//           console.error('Error fetching user stickers:', error);
+//         });
+//     }
+//   }, [user, apiUrl]);
+
+//   useEffect(() => {
+//     if (!user) {
+//       const storedUser = localStorage.getItem('user');
+//       if (storedUser) {
+//         setUser(JSON.parse(storedUser));
+//       } else {
+//         navigate('/login');
+//       }
+//     }
+//   }, [user, navigate, setUser]);
+
+//   if (!user) {
+//     return null;
+//   }
+
+//   // Filter out duplicate stickers
+//   const uniqueUserStickers = [...new Set(userStickers.map(sticker => sticker.sticker))];
+
+//   return (
+//     <div>
+//       <User />
+//       <div className="condiv user-stickers">
+//         <h3>สติ๊กเกอร์ของคุณ:</h3>
+//         {uniqueUserStickers.length > 0 ? (
+//           <ul className="listassign">
+//             {uniqueUserStickers.map(sticker => (
+//               <li key={sticker}>
+//                 <a href={`/userdevices/${sticker}`}>{sticker}</a>
+//               </li>
+//             ))}
+//           </ul>
+//         ) : (
+//           <p>คุณยังไม่มีสติ๊กเกอร์</p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }

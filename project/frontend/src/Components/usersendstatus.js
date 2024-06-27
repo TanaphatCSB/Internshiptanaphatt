@@ -18,6 +18,10 @@ const Userstatus = () => {
     if (user) {
       const fetchUserSubmissions = async () => {
         try {
+       
+          // const apiUrl =  'http://localhost:8081';
+          // axios.get(`${apiUrl}/getUserDevicesBySticker/${sticker}`)
+         
           const response = await axios.get(`http://localhost:8081/user-submissions?userId=${user.userid}`);
           console.log('User Submissions:', response.data);
           setSubmissions(response.data);

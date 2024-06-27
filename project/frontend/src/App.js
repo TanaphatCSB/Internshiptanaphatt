@@ -23,6 +23,7 @@ import Uinformation from './Components/userinformation';
 import { useNotificationContext } from './Components/notificationContext'
 export default function App() {
   const { highlightedDetails, setHighlightedDetails } = useNotificationContext();
+  console.log('API URLee:', process.env.REACT_APP_API_URL);
   
   return (
       <Routes>

@@ -227,26 +227,140 @@
 
 
 
+// const express = require("express");
+// const mysql = require("mysql");
+// const cors = require("cors");
+// const http = require('http');
+// const WebSocket = require('ws');
+// const nodemailer = require('nodemailer');
+// const line = require('@line/bot-sdk'); // Add LINE SDK
+
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// const db = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "",
+//     database: "mydb"
+// });
+
+// // const port = 8081;
+// const port = process.env.PORT || 8081;
+// const server = http.createServer(app);
+// const adminWss = new WebSocket.Server({ noServer: true });
+// const userWss = new WebSocket.Server({ noServer: true });
+
+// server.on('upgrade', (request, socket, head) => {
+//     const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+//     if (pathname === '/admin') {
+//         adminWss.handleUpgrade(request, socket, head, ws => {
+//             adminWss.emit('connection', ws, request);
+//         });
+//     } else if (pathname === '/user') {
+//         userWss.handleUpgrade(request, socket, head, ws => {
+//             userWss.emit('connection', ws, request);
+//         });
+//     } else {
+//         socket.destroy();
+//     }
+// });
+
+// server.listen(port, () => {
+//     console.log("listening on port", port);
+// });
+
+// let notifications = [];
+// let unreadNotifications = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+require('dotenv').config(); // Load .env file
 const express = require("express");
-const mysql = require("mysql");
+// const mysql = require("mysql");
+const mysql = require("mysql2");
 const cors = require("cors");
 const http = require('http');
 const WebSocket = require('ws');
 const nodemailer = require('nodemailer');
 const line = require('@line/bot-sdk'); // Add LINE SDK
 
+
+
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://senddvice123.000webhostapp.com'],
+  optionsSuccessStatus: 200,
+
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
+
+
+
+
+
+// const db = mysql.createConnection({
+    
+//   host: "localhost",
+//     user: "root",
+//     password: "",
+//     database: "mydb"
+// });
+
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "mydb"
+  host: "roundhouse.proxy.rlwy.net", // ใช้ host จาก Railway
+  user: "root", // ใช้ user จาก Railway
+  password: "DPXeeMGqiiVfpQaggUyFxObQxPfnHexx", // ใช้ password จาก Railway
+  database: "railway", // ใช้ database name จาก Railway
+  port: 11893, // ใช้ port จาก Railway
 });
 
-const port = 8081;
+
+db.connect(err => {
+  if (err) {
+      console.error('Error connecting to the database:', err);
+      return;
+  }
+  console.log('Connected to the database.');
+});
+
+
+const queryPromise = (sql, params) => {
+  return new Promise((resolve, reject) => {
+      db.query(sql, params, (error, results) => {
+          if (error) {
+              return reject(error);
+          }
+          resolve(results);
+      });
+  });
+};
+
+// const port = 8081;
+const port = process.env.PORT || 8081;
 const server = http.createServer(app);
 const adminWss = new WebSocket.Server({ noServer: true });
 const userWss = new WebSocket.Server({ noServer: true });
@@ -266,12 +380,15 @@ server.on('upgrade', (request, socket, head) => {
     }
 });
 
-server.listen(port, () => {
-    console.log("listening on port", port);
+app.listen(port, () => {
+    // console.log("listening on port", port);
+    console.log(`Server running on port ${port}`);
 });
 
 let notifications = [];
 let unreadNotifications = 0;
+
+
 
 
 
@@ -337,6 +454,7 @@ function sendLineGroupNotification(groupId, message) {
 
 
 app.post('/notifyDeviceOwners', (req, res) => {
+  console.log('notifyDeviceOwners endpoint hit');
   const sql = `
       SELECT r.email, ud.device_id, s.due_date
       FROM register r
@@ -350,19 +468,23 @@ app.post('/notifyDeviceOwners', (req, res) => {
           return res.status(500).json({ error: 'Database error' });
       }
 
-      const link = 'http://your-website.com'; // แทนที่ด้วย URL ของคุณ
+      console.log('Database query results:', results);
 
+      const link =  'https://senddvice123.000webhostapp.com'; // แทนที่ด้วย URL ของคุณ
+
+    
       results.forEach(row => {
-          const email = row.email;
-          const lineGroupId = row.line_group_id;//24/6/67
-          const subject = `Upcoming Schedule for Your Device: ${row.device_id}`;
-          const text = `Dear User,\n\nYou have an upcoming schedule for your device (ID: ${row.device_id}) on ${row.due_date}.\n\nBest regards,\nYour Company`;
+        const email = row.email;
+        const lineGroupId = row.line_group_id;
+        const subject = `Upcoming Schedule for Your Device: ${row.device_id}`;
+        const text = `Dear User,\n\nYou have an upcoming schedule for your device (ID: ${row.device_id}) on ${row.due_date}.\n\nPlease visit the following link for more details: ${link}\n\nBest regards,\nYour Company`;
 
-          sendEmailNotification(email, subject, text, link);
+        sendEmailNotification(email, subject, text);
           if (lineGroupId) {
             const lineMessage = `You have an upcoming schedule for your device (ID: ${row.device_id}) on ${row.due_date}.`;
+            console.log(`Sending LINE notification to group ${lineGroupId}`);
             sendLineGroupNotification(lineGroupId, lineMessage);
-        }//24/6/67
+        }
       });
 
       res.status(200).json({ message: 'Notifications sent successfully' });
@@ -2325,21 +2447,21 @@ app.get('/getUserStickers/:userId', (req, res) => {
 
 
 
-app.get('/getUserDevicesBySticker/:sticker', (req, res) => {
-  const { sticker } = req.params;
+app.get('/getUserDevicesBySticker/:userId/:sticker', (req, res) => {
+  const { userId, sticker } = req.params;
   const sql = `
-    SELECT ud.user_device_id, ud.device_id, d.name AS device_name
-    FROM user_devices ud
-    JOIN devices d ON ud.device_id = d.id
-    WHERE ud.sticker = ?
+      SELECT ud.user_device_id, ud.device_id, d.name AS device_name
+      FROM user_devices ud
+      JOIN devices d ON ud.device_id = d.id
+      WHERE ud.user_id = ? AND ud.sticker = ?
   `;
 
-  db.query(sql, [sticker], (error, results) => {
-    if (error) {
-      res.status(500).send(error);
-    } else {
-      res.json(results);
-    }
+  db.query(sql, [userId, sticker], (error, results) => {
+      if (error) {
+          res.status(500).send(error);
+      } else {
+          res.json(results);
+      }
   });
 });
 
@@ -2413,7 +2535,7 @@ app.get('/getStickerDevices/:userId/:sticker', (req, res) => {
 // server.js
 app.get('/getUsers', (req, res) => {
   const sql = `
-      SELECT u.user_id, r.name,r.surname FROM users u JOIN register r where u.user_id = r.id
+      SELECT u.user_id, r.name,r.surname FROM users u JOIN register r where u.user_id = r.id and r.urole = 'users'
   `;
   db.query(sql, (err, results) => {
       if (err) {
@@ -2424,63 +2546,115 @@ app.get('/getUsers', (req, res) => {
   });
 });
 
-// server.js
-app.get('/getUserInfo/:userId', (req, res) => {
-  const userId = req.params.userId;
-  const query = `
-     SELECT 
-    u.user_device_id,
-    u.user_id,
-    u.device_id,
-    u.sticker,
-    u.username,
-    u.durable,
-    u.device_name,
-    u.brand,
-    u.model,
-    u.serial_number,
-    s.round,
-    s.id AS schedule_id,
-    CASE 
-        WHEN a.sticker IS NOT NULL AND a.device_id IS NOT NULL AND a.schedule_id IS NOT NULL 
-        THEN 'ส่งแล้ว'
-        ELSE 'ยังไม่ส่ง'
-    END AS status,
-    a.status AS teststatus,
-    r.surname
-FROM 
-    user_devices u
-JOIN 
-    schedules s 
-    ON u.device_id = s.device_id
-JOIN
-    register r
-    ON r.id = u.user_id
-LEFT JOIN 
-    accepttable a 
-    ON u.sticker = a.sticker 
-    AND u.device_id = a.device_id 
-    AND s.id = a.schedule_id
-WHERE 
-    u.user_id = ?; `
-;
+// server.js //25/6/67
+// app.get('/getUserInfo/:userId', (req, res) => {
+//   const userId = req.params.userId;
+//   const query = `
+//      SELECT 
+//     u.user_device_id,
+//     u.user_id,
+//     u.device_id,
+//     a.submission_id,
+//     u.sticker,
+//     u.username,
+//     u.durable,
+//     u.device_name,
+//     u.brand,
+//     u.model,
+//     u.serial_number,
+//     s.round,
+//     s.id AS schedule_id,
+//     CASE 
+//         WHEN a.sticker IS NOT NULL AND a.device_id IS NOT NULL AND a.schedule_id IS NOT NULL 
+//         THEN 'ส่งแล้ว'
+//         ELSE 'ยังไม่ส่ง'
+//     END AS status,
+//     a.status AS teststatus,
+//     r.surname,
+//     s.due_date,
+//     a.submission_date
+// FROM 
+//     user_devices u
+// JOIN 
+//     schedules s 
+//     ON u.device_id = s.device_id
+// JOIN
+//     register r
+//     ON r.id = u.user_id
+// LEFT JOIN 
+//     accepttable a 
+//     ON u.sticker = a.sticker 
+//     AND u.device_id = a.device_id 
+//     AND s.id = a.schedule_id
 
-  db.query(query, [userId], (err, results) => {
-      if (err) {
-          console.error('Error fetching user:', err);
-          res.status(500).send('Server error');
-          return;
+// WHERE 
+//     u.user_id = ?; `
+// ;
+
+//   db.query(query, [userId], (err, results) => {
+//       if (err) {
+//           console.error('Error fetching user:', err);
+//           res.status(500).send('Server error');
+//           return;
+//       }
+
+//       if (results.length === 0) {
+//           res.status(404).send('User not found');
+//           return;
+//       }
+
+//       res.json(results);
+//   });
+// });
+
+
+// Get user devices by sticker
+app.get('/getUserDevicesByStickerAdmin/:userId', (req, res) => {
+  const { userId } = req.params;
+  const sql = `
+      SELECT ud.user_device_id, ud.device_id, ud.sticker, d.name AS device_name
+      FROM user_devices ud
+      JOIN devices d ON ud.device_id = d.id
+      WHERE ud.user_id = ?
+  `;
+
+  db.query(sql, [userId], (error, results) => {
+      if (error) {
+          res.status(500).send(error);
+      } else {
+          res.json(results);
       }
-
-      if (results.length === 0) {
-          res.status(404).send('User not found');
-          return;
-      }
-
-      res.json(results);
   });
 });
 
+// server
+app.get('/getStickerDetails/:userId/:sticker/:deviceId', async (req, res) => {
+  const { userId, sticker, deviceId } = req.params;
+  try {
+      const sql = `
+          SELECT u.user_device_id, u.user_id, u.device_id, a.submission_id, u.sticker, u.username, u.durable, u.device_name, u.brand, u.model, u.serial_number, s.round, s.id AS schedule_id, 
+                 CASE WHEN a.sticker IS NOT NULL AND a.device_id IS NOT NULL AND a.schedule_id IS NOT NULL THEN 'ส่งแล้ว' ELSE 'ยังไม่ส่ง' END AS status, 
+                 a.status AS teststatus, r.surname, s.due_date, a.submission_date ,a.test_report
+          FROM user_devices u 
+          JOIN schedules s ON u.device_id = s.device_id 
+          JOIN register r ON r.id = u.user_id 
+          LEFT JOIN accepttable a ON u.sticker = a.sticker AND u.device_id = a.device_id AND s.id = a.schedule_id 
+          WHERE u.user_id = ? AND u.sticker = ? AND u.device_id = ?`;
+
+      const results = await queryPromise(sql, [userId, sticker, deviceId]);
+
+      console.log('Query results:', results); // Log the results to see their structure
+
+      if (results.length > 0) {
+          res.json(results); // Return all results
+      } else {
+          res.status(404).json({ error: 'No details found for the given parameters' });
+      }
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+  }
+});
 
 
 app.get('/getUserStickers/:userId', (req, res) => {
