@@ -182,7 +182,8 @@ const Admin = () => {
     const [modalContent, setModalContent] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/getUsers')
+        // axios.get('http://localhost:8081/getUsers')
+        axios.get(`${process.env.REACT_APP_API_URL}/getUsers`)
             .then(response => {
                 console.log('Users fetched successfully:', response.data);
                 setUsers(response.data);
@@ -193,7 +194,8 @@ const Admin = () => {
     }, []);
 
     const fetchUserInfo = (userId) => {
-        axios.get(`http://localhost:8081/getUserDevicesByStickerAdmin/${userId}`)
+        // axios.get(`http://localhost:8081/getUserDevicesByStickerAdmin/${userId}`)
+        axios.get(`${process.env.REACT_APP_API_URL}/getUserDevicesByStickerAdmin/${userId}`)
             .then(response => {
                 console.log('User info fetched successfully:', response.data);
                 const sortedData = response.data.sort((a, b) => {
@@ -241,7 +243,8 @@ const Admin = () => {
     };
     const fetchStickerDetails = (userId, sticker, deviceId) => {
         console.log('Fetching details for:', userId, sticker, deviceId); // Add console log for debugging
-        axios.get(`http://localhost:8081/getStickerDetails/${userId}/${sticker}/${deviceId}`)
+        // axios.get(`http://localhost:8081/getStickerDetails/${userId}/${sticker}/${deviceId}`)
+        axios.get(`${process.env.REACT_APP_API_URL}/getStickerDetails/${userId}/${sticker}/${deviceId}`)
             .then(response => {
                 console.log('Sticker details fetched successfully:', response.data);
                 setStickerDetails(response.data);

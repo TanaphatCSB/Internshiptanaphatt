@@ -165,7 +165,8 @@ export default function Admincheckstatus() {
 
     const fetchActionLog = async () => {
         try {
-            const response = await axios.get('http://localhost:8081/getActionLog');
+            // const response = await axios.get('http://localhost:8081/getActionLog');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/getActionLog`);
             setActionLog(response.data);
         } catch (error) {
             console.error('Error fetching action Log', error);
@@ -174,7 +175,8 @@ export default function Admincheckstatus() {
 
     const fetchActionLog2 = async () => {
         try {
-            const response = await axios.get('http://localhost:8081/getActionLog2');
+            // const response = await axios.get('http://localhost:8081/getActionLog2');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/getActionLog2`);
             setActionLog2(response.data);
         } catch (error) {
             console.error('Error fetching action Log', error);

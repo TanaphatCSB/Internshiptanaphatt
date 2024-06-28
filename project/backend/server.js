@@ -1850,17 +1850,26 @@ WHERE r.id = ? AND d.id = ?
 });
 
 app.post('/addChangeDeviceStatus', (req, res) => {
-    const { userId, changeId } = req.body;
-    const sql = 'INSERT INTO changedevicestatus (user_id, change_id, status) VALUES (?, ?, "ส่งแล้ว")';
-    db.query(sql, [userId, changeId], (err, result) => {
-      if (err) {
-        console.error('Error inserting into changedevicestatus:', err);
-        return res.status(500).json({ error: 'Failed to add change device status' });
+  const { userId, changeId } = req.body;
+  
+  // ตรวจสอบว่า changeId มีอยู่ใน changeaddhistory
+  const checkSql = 'SELECT id FROM changeaddhistory WHERE id = ?';
+  db.query(checkSql, [changeId], (checkErr, checkResult) => {
+      if (checkErr || checkResult.length === 0) {
+          return res.status(400).json({ error: 'Invalid changeId' });
       }
-      res.status(200).json({ success: 'Change device status added successfully' });
       
-    });
+      // ถ้า changeId ถูกต้อง ดำเนินการต่อ
+      const sql = 'INSERT INTO changedevicestatus (user_id, change_id, status) VALUES (?, ?, "ส่งแล้ว")';
+      db.query(sql, [userId, changeId], (err, result) => {
+          if (err) {
+              console.error('Error inserting into changedevicestatus:', err);
+              return res.status(500).json({ error: 'Failed to add change device status' });
+          }
+          res.status(200).json({ success: 'Change device status added successfully' });
+      });
   });
+});
 
   app.post('/changeUserDeviceRequest', (req, res) => {
     const { userId, selectedDevice, newDevice, brand, model, serial, selectedSerial, sticker, durable, selectedSticker } = req.body;

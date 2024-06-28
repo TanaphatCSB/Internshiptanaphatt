@@ -76,7 +76,8 @@ export default function Userassign() {
     const [schedules, setSchedules] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8081/getDeviceSchedules/${deviceId}`)
+        // axios.get(`http://localhost:8081/getDeviceSchedules/${deviceId}`)
+        axios.get(`${process.env.REACT_APP_API_URL}/getDeviceSchedules/${deviceId}`)
             .then(response => {
                 setSchedules(response.data);
             })

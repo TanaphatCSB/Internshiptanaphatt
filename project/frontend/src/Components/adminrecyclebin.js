@@ -12,7 +12,8 @@ export default function AdminRecycleBin() {
     }, []);
 
     const fetchRecycleBinData = () => {
-        axios.get('http://localhost:8081/getRecycleBinData')
+        // axios.get('http://localhost:8081/getRecycleBinData')
+        axios.get(`${process.env.REACT_APP_API_URL}/getRecycleBinData`)
             .then(response => {
                 setRecycleBinData(response.data);
             })
@@ -23,7 +24,8 @@ export default function AdminRecycleBin() {
 
     const handleRepairCompleted = async (item) => {
         try {
-            await axios.put(`http://localhost:8081/repair-completed/${item.id}`, {
+            // await axios.put(`http://localhost:8081/repair-completed/${item.id}`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/repair-completed/${item.id}`, {
                 userId: item.user_id,
                 deviceId: item.device_id,
                 serial: item.serial,

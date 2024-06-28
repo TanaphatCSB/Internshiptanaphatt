@@ -14,7 +14,8 @@ export default function Adminchecktest() {
     const { remarkId } = useParams(); // Get the remark ID from the URL
 
     useEffect(() => {
-        axios.get('http://localhost:8081/getAssignments')
+        // axios.get('http://localhost:8081/getAssignments')
+         axios.get(`${process.env.REACT_APP_API_URL}/getAssignments`)
             .then(response => {
                 const fetchedAssignments = response.data;
                 if (remarkId) {
@@ -32,7 +33,8 @@ export default function Adminchecktest() {
     }, [remarkId]);
 
     const handleDelete = (assignmentId) => {
-        axios.delete(`http://localhost:8081/deleteAssignment/${assignmentId}`)
+        // axios.delete(`http://localhost:8081/deleteAssignment/${assignmentId}`)
+        axios.delete(`${process.env.REACT_APP_API_URL}/deleteAssignment/${assignmentId}`)
             .then(response => {
                 setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
                 alert('Assignment deleted successfully');

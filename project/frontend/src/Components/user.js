@@ -12,7 +12,8 @@ export default function MyUsers() {
 
   useEffect(() => {
     if (user) {
-      axios.get(`http://localhost:8081/getUserStickers/${user.userid}`)
+      // axios.get(`http://localhost:8081/getUserStickers/${user.userid}`)
+      axios.get(`${process.env.REACT_APP_API_URL}/getUserStickers/${user.userid}`)
         .then(response => {
           setUserStickers(response.data);
         })

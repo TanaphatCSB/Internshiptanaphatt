@@ -36,7 +36,8 @@ export default function UserSubmit() {
       }, [deviceId, user, sticker]);
 
     const fetchSerialNumbers = (deviceId, userId, sticker) => {
-        axios.get(`http://localhost:8081/getSerialsNumbers/${deviceId}/${userId}/${sticker}`)
+        // axios.get(`http://localhost:8081/getSerialsNumbers/${deviceId}/${userId}/${sticker}`)
+         axios.get(`${process.env.REACT_APP_API_URL}/getSerialsNumbers/${deviceId}/${userId}/${sticker}`)
           .then(response => {
             setSerialData(response.data);
           })
@@ -74,7 +75,8 @@ export default function UserSubmit() {
 
     const checkExistingSubmission = async () => {
         try {
-            const response = await axios.get(`http://localhost:8081/getSerialsNumbers/${deviceId}/${user.userid}/${sticker}`);
+            // const response = await axios.get(`http://localhost:8081/getSerialsNumbers/${deviceId}/${user.userid}/${sticker}`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}//getSerialsNumbers/${deviceId}/${user.userid}/${sticker}`);
             const existingSubmissions = response.data;
     
             // Check if there's an existing submission in accepttable
@@ -195,7 +197,8 @@ export default function UserSubmit() {
                     scheduleId: formData.scheduleId // Ensure scheduleId is included
                 };
     
-                const response = await axios.post('http://localhost:8081/submitUserSubmission', payload);
+                // const response = await axios.post('http://localhost:8081/submitUserSubmission', payload);
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/submitUserSubmission`, payload);
     
                 if (response.data.success) {
                     alert('Assignment submitted successfully');

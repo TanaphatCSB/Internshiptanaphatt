@@ -292,7 +292,8 @@ export default function Admincheckreport() {
     }, [location.state]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/getPendingApprovals')
+        // axios.get('http://localhost:8081/getPendingApprovals')
+        axios.get(`${process.env.REACT_APP_API_URL}/getPendingApprovals`)
             .then(response => {
                 const data = response.data;
                 if (submissionId && userId) {
@@ -320,7 +321,8 @@ export default function Admincheckreport() {
     // }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/getrequestaddchangedevice')
+        // axios.get('http://localhost:8081/getrequestaddchangedevice')
+        axios.get(`${process.env.REACT_APP_API_URL}/getrequestaddchangedevice`)
             .then(response => {
                 const data = response.data;
                 if (historyId && userId) {
@@ -342,7 +344,8 @@ export default function Admincheckreport() {
 
     const handleApprove = async (approval) => {
         try {
-            const response = await axios.put(`http://localhost:8081/approveAssignment/${approval.id}`, { note: approval.note, status: approval.status });
+            // const response = await axios.put(`http://localhost:8081/approveAssignment/${approval.id}`, { note: approval.note, status: approval.status });
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/approveAssignment/${approval.id}`, { note: approval.note, status: approval.status });
             if (response.data.oldData) {
                 setOldData(response.data.oldData);
                 setSelectedApproval(approval);
@@ -360,7 +363,8 @@ export default function Admincheckreport() {
 
     const handleApproveFinal = async () => {
         try {
-            await axios.put(`http://localhost:8081/approveAssignmentFinal/${selectedApproval.id}`, { note: selectedApproval.note, status: selectedApproval.status });
+            // await axios.put(`http://localhost:8081/approveAssignmentFinal/${selectedApproval.id}`, { note: selectedApproval.note, status: selectedApproval.status });
+            await axios.put(`${process.env.REACT_APP_API_URL}/approveAssignmentFinal/${selectedApproval.id}`, { note: selectedApproval.note, status: selectedApproval.status });
             setPendingApprovals(pendingApprovals.filter(a => a.id !== selectedApproval.id));
             insertActionLog('approve', selectedApproval.id, selectedApproval.note, selectedApproval.status, selectedApproval.submission_id);
             setShowComparison(false);
@@ -372,7 +376,8 @@ export default function Admincheckreport() {
 
     const handleReject = async (approval) => {
         try {
-            await axios.put(`http://localhost:8081/rejectAssignment/${approval.id}`);
+            // await axios.put(`http://localhost:8081/rejectAssignment/${approval.id}`);
+            await axios.put(`${process.env.REACT_APP_API_URL}/rejectAssignment/${approval.id}`);
             setPendingApprovals(pendingApprovals.filter(a => a.id !== approval.id));
             insertActionLog('reject', approval.id, null, null, approval.submission_id);
             alert('Assignment rejected successfully');
@@ -386,7 +391,8 @@ export default function Admincheckreport() {
             const { submission_id, user_id, device_id, name, brand, model, serial ,sticker,durable} = approval;
 
             // เพิ่มข้อมูลลงในตาราง devices_in_repair
-            await axios.post('http://localhost:8081/add-to-repair', {
+            // await axios.post('http://localhost:8081/add-to-repair', {
+            await axios.post(`${process.env.REACT_APP_API_URL}/add-to-repair`, {
                 userId: user_id,
                 deviceId: device_id,
                 username: name,
@@ -400,10 +406,12 @@ export default function Admincheckreport() {
 
 
             // ลบออกจาก user_devices
-            await axios.delete(`http://localhost:8081/remove-user-device/${user_id}/${sticker}/${device_id}`);
+            // await axios.delete(`http://localhost:8081/remove-user-device/${user_id}/${sticker}/${device_id}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/remove-user-device/${user_id}/${sticker}/${device_id}`);
 
             // ลบออกจาก pendingapprovals
-            await axios.put(`http://localhost:8081/sendToRepair/${approval.id}`);
+            // await axios.put(`http://localhost:8081/sendToRepair/${approval.id}`);
+            await axios.put(`${process.env.REACT_APP_API_URL}/sendToRepair/${approval.id}`);
             setPendingApprovals(pendingApprovals.filter(a => a.id !== approval.id));
 
             insertActionLog('ส่งซ่อม', approval.id, null, null, approval.submission_id);
@@ -415,7 +423,8 @@ export default function Admincheckreport() {
 
     const insertActionLog = async (action, assignmentId, note, status, submissionId) => {
         try {
-            await axios.post('http://localhost:8081/insertActionLog', {
+            // await axios.post('http://localhost:8081/insertActionLog', {
+            await axios.post(`${process.env.REACT_APP_API_URL}/insertActionLog`, {
                 action,
                 assignmentId,
                 note,
@@ -432,7 +441,8 @@ export default function Admincheckreport() {
             const { id, user_id, selected_device_id, new_device_id, brand, model, serial_number, action, selecteddevice, selecteddeviceserial,sticker,durable} = approval2;
     
             if (action === 'add') {
-                await axios.post('http://localhost:8081/addUserDevice', {
+                // await axios.post('http://localhost:8081/addUserDevice', {
+                await axios.post(`${process.env.REACT_APP_API_URL}/addUserDevice`, {
                     userId: user_id,
                     newDevice: new_device_id,
                     brand,
@@ -443,7 +453,8 @@ export default function Admincheckreport() {
                 
                 });
             } else if (action === 'change') {
-                await axios.post('http://localhost:8081/changeUserDevice', {
+                // await axios.post('http://localhost:8081/changeUserDevice', {
+                await axios.post(`${process.env.REACT_APP_API_URL}/changeUserDevice`, {
                     userId: user_id,
                     selectedDevice: selected_device_id,
                     newDevice: new_device_id,
@@ -456,14 +467,16 @@ export default function Admincheckreport() {
                 });
             }
             else if (action === 'deletedevice') {
-                await axios.post('http://localhost:8081/DeleteUserDevice', {
+                // await axios.post('http://localhost:8081/DeleteUserDevice', {
+                await axios.post(`${process.env.REACT_APP_API_URL}/DeleteUserDevice`, {
                     userId: user_id,
                     selectedDevice: selected_device_id,
                     selectedSerial: selecteddeviceserial
                 });
             }
     
-            await axios.put(`http://localhost:8081/rejectaddchange/${id}`);
+            // await axios.put(`http://localhost:8081/rejectaddchange/${id}`);
+            await axios.put(`${process.env.REACT_APP_API_URL}/rejectaddchange/${id}`);
             setRequestAddChangeDevice(requestAddChangeDevice.filter(req => req.id !== id));
              insertActionLog2('approve', approval2.id, approval2.note, approval2.status,approval2.id);
             alert("update เรียบร้อยแล้ว");
@@ -474,7 +487,8 @@ export default function Admincheckreport() {
 
           const handleReject2 = async (approval) => {
         try {
-            await axios.put(`http://localhost:8081/rejectaddchange/${approval.id}`);
+            // await axios.put(`http://localhost:8081/rejectaddchange/${approval.id}`);
+            await axios.put(`${process.env.REACT_APP_API_URL}/rejectaddchange/${approval.id}`);
             setRequestAddChangeDevice(requestAddChangeDevice.filter(req => req.id !== approval.id));
             insertActionLog2('reject', approval.id, approval.note, approval.status);
             alert("Rejected successfully");
@@ -485,7 +499,8 @@ export default function Admincheckreport() {
 
           const insertActionLog2 = async (action, assignmentId, note, status) => {
         try {
-          await axios.post('http://localhost:8081/insertActionLog2', {
+        //   await axios.post('http://localhost:8081/insertActionLog2', {
+          await axios.post(`${process.env.REACT_APP_API_URL}/insertActionLog2`, {
             action,
             note,
             status,

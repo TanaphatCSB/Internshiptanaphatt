@@ -22,7 +22,8 @@ const Userstatus = () => {
           // const apiUrl =  'http://localhost:8081';
           // axios.get(`${apiUrl}/getUserDevicesBySticker/${sticker}`)
          
-          const response = await axios.get(`http://localhost:8081/user-submissions?userId=${user.userid}`);
+          // const response = await axios.get(`http://localhost:8081/user-submissions?userId=${user.userid}`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/user-submissions?userId=${user.userid}`);
           console.log('User Submissions:', response.data);
           setSubmissions(response.data);
         } catch (error) {
@@ -32,7 +33,8 @@ const Userstatus = () => {
 
       const fetchChangeDeviceStatus = async () => {
         try {
-          const response = await axios.get(`http://localhost:8081/change-device-status?userId=${user.userid}`);
+          // const response = await axios.get(`http://localhost:8081/change-device-status?userId=${user.userid}`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/change-device-status?userId=${user.userid}`);
           console.log('Change Device Status:', response.data);
           setChangeDeviceStatus(response.data);
         } catch (error) {
@@ -85,7 +87,8 @@ const Userstatus = () => {
     try {
       // Set status to "ส่งแล้ว" before submitting
       const updatedSubmission = { ...editSubmission, status: 'ส่งแล้ว' };
-      const response = await axios.put('http://localhost:8081/update-submission-pending', updatedSubmission);
+      // const response = await axios.put('http://localhost:8081/update-submission-pending', updatedSubmission);
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/update-submission-pending`, updatedSubmission);
 
       if (response.data.success) {
         setSubmissions(submissions.map(sub => (sub.id === editSubmission.id ? updatedSubmission : sub)));

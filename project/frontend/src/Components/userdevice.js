@@ -81,7 +81,8 @@ export default function UserDevices() {
 
   const fetchDevices = (userId) => {
     if (userId && sticker) {
-      axios.get(`http://localhost:8081/getUserDevicesBySticker/${userId}/${sticker}`)
+      // axios.get(`http://localhost:8081/getUserDevicesBySticker/${userId}/${sticker}`)
+      axios.get(`${process.env.REACT_APP_API_URL}/getUserDevicesBySticker/${userId}/${sticker}`)
         .then(response => {
           setDevices(response.data);
         })

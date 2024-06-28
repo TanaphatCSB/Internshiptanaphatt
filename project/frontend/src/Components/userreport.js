@@ -4,7 +4,9 @@ import User from './userhome';
 import { UserContext } from './userContext';
 import { useParams } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:8081';
+// const API_BASE_URL = 'http://localhost:8081';
+
+const API_BASE_URL = `${process.env.REACT_APP_API_URL}`;
 
 function Report() {
   const { user } = useContext(UserContext);

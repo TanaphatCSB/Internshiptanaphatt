@@ -63,7 +63,8 @@ export default function UserInformation() {
 
     useEffect(() => {
         if (user && user.userid) {
-            axios.get(`http://localhost:8081/user_devices/${user.userid}`)
+            // axios.get(`http://localhost:8081/user_devices/${user.userid}`)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_devices/${user.userid}`)
                 .then(response => {
                     setUserDevices(response.data.userDevices);
                     setUserRegister(response.data.userRegister[0]); // Assuming the response will be an array
